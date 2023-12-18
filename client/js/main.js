@@ -259,6 +259,9 @@ socket.on("room_disconnect_event",(data) => {
 	  document.querySelectorAll('.emj').forEach((c) => {
 		  c.remove()
 	  })
+  	if(document.querySelector("#end_game")){
+	  document.querySelector("#end_game").remove()
+	}
   	
 })
 
