@@ -1,0 +1,43 @@
+<div
+  id="user-room"
+  class="container-sm d-flex align-items-center justify-content-center"
+  style="min-height: 100vh"
+>
+  <form
+    class="container-fluid"
+    method="POST"
+    style="width: 400px"
+    name="room_form"
+  >
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="aria-room-name">
+	Room Name
+      </span>
+      <input
+	autocomplete="off"
+        type="text"
+        class="form-control"
+        aria-label="Room Name"
+	id="room-name"
+	name="room_name"
+        aria-describedby="aria-room-name"
+      />
+    </div>
+  	<div class="d-flex justify-content-center mt-3 w-100">
+		<button type="submit" id="create" 
+		  class="btn btn-success d-flex justify-content-center w-100">
+		<span>Create</span>
+		</button>
+		<button type="submit" id="join"
+		  class="btn btn-primary d-flex justify-content-center w-100 ms-3">
+		<span>Join</span>
+		</button>
+	</div>
+		<button
+		    type="button"
+		    onclick="random_str('room',document.getElementById('room-name'))"
+		  class="btn btn-outline-secondary d-flex justify-content-center w-100 mt-3">
+		<span>Generate Random</span>
+		</button>
+  </form>
+</div>

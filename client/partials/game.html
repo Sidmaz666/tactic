@@ -1,0 +1,121 @@
+<div id="user-game" class="d-flex justify-content-center flex-column">
+  <nav class="navbar bg-transparent fixed-top">
+  <div class="container-fluid">
+    <button class="navbar-toggler border-0 p-0 text-primary"
+	    style="--bs-text-opacity: 0;"
+	    type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasNavbar"
+      aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-start " tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header border-bottom border-secondary-subtle">
+        <h5 class="offcanvas-title d-flex justify-constent-center align-items-center" id="offcanvasNavbarLabel">
+	  	<img class="user_profile_image
+		border border-secondary
+		me-2
+		"
+		style="width: 50px;height: 50px;border-radius: 100%;"
+		src="" alt="User Profile!">
+		<span class="d-flex flex-column">
+		  <span class="username_display"></span>
+		  <span style="font-size:0.80rem;">
+		    <span class="fw-bold">
+		      Lv:
+		    </span>
+		    <span class="user_level">0</span>
+		  </span>
+		</span>
+	</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <li class="nav-item fs-4">
+            <span class="nav-link" style="cursor:pointer" onclick="window.location = window.location.origin"
+	      >
+	      New Room <i class="fa-solid fa-house fs-5"></i> 
+	    </span>
+	  </li>
+          <li class="nav-item fs-4">
+            <span class="nav-link" style="cursor:pointer" onclick="share_link(this)"
+	      id="share_link_btn" data-link="">
+	      Share <i class="fa-solid fa-share fs-5"></i>
+	    </span>
+          </li>
+          <li class="nav-item fs-4">
+            <span class="nav-link" style="cursor:pointer" 
+	      onclick="toggleColorMode(document.querySelector('#toggle-color-btn'))">
+	      Theme <i id="toggle-color-btn" class="fa-solid fa-sun fs-5"></i>
+	      </button>
+	    </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+	<div id="players_container" class="mt-2 d-flex flex-row justify-content-center align-items-center"
+	  style="height:100px;">
+        <div class="d-flex justify-content-center align-items-center position-relative">
+	  	<img class="user_profile_image
+		border border-secondary
+		me-2
+		"
+		id="player-indicator"
+		style="width: 50px;height: 50px;border-radius: 100%;"
+		src="" alt="User Profile!">
+	</div>
+	</div>
+
+<style>
+.board-cell {
+      border: 1px solid var(--bs-secondary-border-subtle);
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+    }
+
+    .board-cell:hover {
+      background-color: var(--bs-gray-800);
+      cursor: pointer;
+    }
+    #emoji_icon:hover > svg{
+      color: var(--bs-gray-400);
+    }
+</style>
+
+<div class="container mt-5 ps-3 pe-3">
+    <div class="row mx-auto game_board" style="max-width: 300px;">
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+    <div class="col-4 board-cell"  data-value="" style="pointer-events: none;"></div>
+  </div>
+</div>
+
+
+<div
+  class="position-absolute" style="top:50px;left:5px">
+    <button
+      type="button" class="btn d-flex border-0 fs-5"
+      style="cursor: pointer;--bs-text-opacity:0;color:#9b9d9e;"
+      id="emoji_icon" onclick="show_emoji()">
+      <i class="fa-solid fa-face-smile-beam"></i>
+    </button>
+</div>
+
+<div
+    id="emoji-picker-container"
+  class="position-absolute" style="top:50px;left:42px;">
+</div>
+
+</div>

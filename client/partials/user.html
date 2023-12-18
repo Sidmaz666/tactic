@@ -1,0 +1,30 @@
+  <div id="user-auth"
+	   class="container-sm d-flex align-items-center
+	      justify-content-center"
+	      style="min-height: 100vh;">
+    <form class="container-fluid"
+	  method="POST"
+	  style="width: 400px;" name="username_form">
+    	<div class="input-group mb-3">
+	<input type="text"
+	class="form-control"
+	placeholder="Username" 
+	id="username"
+	name="username"
+	autocomplete="off"
+	aria-label="Username" aria-describedby="username-btn">
+	<button 
+	  class="btn btn-primary" 
+	  type="submit"
+	  name="username_btn"
+	  id="username-btn">Join</button>
+      </div>
+      <div class="d-flex mt-3">
+	<button
+	    type="button"
+	    onclick="random_str('user',document.getElementById('username'))"
+	  class="btn btn-outline-secondary" style="width:100%">Generate Random</button>
+      </div>
+      </form>
+  </div>
+
