@@ -242,44 +242,37 @@ socket.on("room_disconnect_event",(data) => {
 
 // Common User Function
 function common_user_function(){
-      setTimeout(() => {
-	let x = 0
-	const iv = setInterval(() => {
-	  if(document.querySelector('.username_display') &&
-	    document.querySelector('.username_display').textContent.length == 0){
-	    if(document.querySelectorAll('.username_display').length > 0){
-	      document.querySelectorAll('.username_display').forEach((e) => {
-		e.textContent = localStorage.getItem("username")
-	      })
-	    }
-		x +=1
-	  }
+  if(document.querySelector(".username_display") &&
+	document.querySelector(".user_profile_image") &&
+    	document.querySelector("#player-indicator")
+  	) {
+	setTimeout(() => {
+	      if(document.querySelectorAll('.username_display').length > 0){
+		document.querySelectorAll('.username_display').forEach((e) => {
+		  e.textContent = localStorage.getItem("username")
+		})
+	      }
 
-	  if(document.querySelector('.user_profile_image') && 
-	     document.querySelectorAll('.user_profile_image').src.length == 0
-	  ){
-	    if(document.querySelectorAll('.user_profile_image').length > 0){
-	      document.querySelectorAll('.user_profile_image').forEach((e) => {
-		e.src = `https://robohash.org/${localStorage.getItem("username")}.png`
-	      })
-	    }
-	    x += 1
-	  }
-	  if(document.querySelector("#player-indicator").parentElement){
-	   document.querySelector("#player-indicator").parentElement.insertAdjacentHTML("afterbegin",`
-		<span class="position-absolute bg-dark border border-light-subtle" id="player-sign"
-		style="border-radius:100%;left:-15px;text-align:center;width:28px;height:28px;bottom:-5px"
-		>
-			${player_sign == 'x' ? 'x' : 'o'}
-		</span>
+	      if(document.querySelectorAll('.user_profile_image').length > 0){
+		document.querySelectorAll('.user_profile_image').forEach((e) => {
+		  e.src = `https://robohash.org/${localStorage.getItem("username")}.png`
+		})
+	      }
+	    if(document.querySelector("#player-indicator").parentElement){
+	     document.querySelector("#player-indicator").parentElement.insertAdjacentHTML("afterbegin",`
+		  <span class="position-absolute bg-dark border border-light-subtle" id="player-sign"
+		  style="border-radius:100%;left:-15px;text-align:center;width:28px;height:28px;bottom:-5px"
+		  >
+			  ${player_sign == 'x' ? 'x' : 'o'}
+		  </span>
 	     `)
-	  x += 1
-	  }
-		if(x == 3){
-		  clearInterval(iv)
-		}
-	})
-      },800)
+	    }
+	},300)
+      } else {
+		setTimeout(() => {
+		  common_user_function()
+		},300)
+      }
 }
 
 set_event(`document.forms['room_form']`,"submit", function(e){
