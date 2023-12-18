@@ -156,7 +156,7 @@ function join_room(roomname){
   current_room = roomname
 }
 // Function to add share Link
-function add_link(){
+function add_link(data){
   if(document.getElementById("share_link_btn")){
     document.getElementById('share_link_btn').dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`  
   } else {
@@ -174,7 +174,7 @@ socket.on("room_create_event",(data) => {
 	player_sign = data.player_sign
 	setTimeout(() => {
 	    notify("#user-game","room_creation_success", data.message,8000,3)
-	    add_link()
+	    add_link(data)
 	},500)
   }
 })
