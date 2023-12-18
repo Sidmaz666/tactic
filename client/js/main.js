@@ -155,6 +155,16 @@ function join_room(roomname){
   socket.emit("join_room", { username: localStorage.getItem("username"), roomname })
   current_room = roomname
 }
+// Function to add share Link
+function add_link(){
+  if(document.getElementById("share_link_btn")){
+    document.getElementById('share_link_btn').dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`  
+  } else {
+    setTimeout(() => {
+	add_link()	
+    },50)
+  }
+}
 // Handle Socket Room Create/Join 
 socket.on("room_create_event",(data) => {
   if(data.status == "fail"){
@@ -164,7 +174,7 @@ socket.on("room_create_event",(data) => {
 	player_sign = data.player_sign
 	setTimeout(() => {
 	    notify("#user-game","room_creation_success", data.message,8000,3)
-	    document.getElementById('share_link_btn').dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`  
+	    add_link()
 	},500)
   }
 })
