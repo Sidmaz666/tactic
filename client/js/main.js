@@ -161,7 +161,7 @@ function add_link(data){
     document.getElementById('share_link_btn').dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`  
   } else {
     setTimeout(() => {
-	add_link()	
+	add_link(data)	
     },50)
   }
 }
@@ -194,17 +194,9 @@ function remove_share_btn(){
     },500)
 }
 
-socket.on("room_join_event",(data) => {
-  if(data.status == "fail"){
-    notify("#user-room","room_joining_error", data.message,8000,2)
-  } else if(data.status == "success") {
-	if(localStorage.getItem("username") == data.username){
-	  player_sign = data.player_sign
-	  setup_("./partials/game.html", "body","#user-room")
-	} 
-	setTimeout(() => {
-	notify("#user-game","room_joining_success", data.message,8000,3)
-	remove_share_btn()
+// render opponent function 
+function render_oppoenent(data){
+	if(document.querySelector("#players_container")){
 	document.querySelector("#players_container").insertAdjacentHTML("beforeend",`
 	<span class="ms-2 me-3 fs-5 fw-bold" id="vs-txt">
 	  <i>VS</i>
@@ -225,6 +217,26 @@ socket.on("room_join_event",(data) => {
 		src="https://robohash.org/${data.opponent[0] == localStorage.getItem("username") ? data.username : data.opponent[0] }.png" alt="Opponent Profile!">
 	</div>
 	  `)
+
+	} else {
+	  setTimeout(() => {
+		render_oppoenent(data)
+	  },50)
+	}
+}
+
+socket.on("room_join_event",(data) => {
+  if(data.status == "fail"){
+    notify("#user-room","room_joining_error", data.message,8000,2)
+  } else if(data.status == "success") {
+	if(localStorage.getItem("username") == data.username){
+	  player_sign = data.player_sign
+	  setup_("./partials/game.html", "body","#user-room")
+	} 
+	setTimeout(() => {
+	notify("#user-game","room_joining_success", data.message,8000,3)
+	remove_share_btn()
+	render_oppoenent(data)
 	},500)
   }
 })
@@ -302,15 +314,26 @@ set_event(`document.forms['room_form']`,"submit", function(e){
 	}
 })
 
-// Handle player Turn
-socket.on("player_turn",(data) => {
-  setTimeout(() => {
-    	// Update Board
+// function to update board on player Turn
+function update_board(data){
+	if(document.querySelector('.board-cell')){
     	data.board.forEach((e,i)=> {
 	    const v = e == null ? '' : e
 	    document.querySelectorAll('.board-cell')[i].dataset.value = v
 	    document.querySelectorAll('.board-cell')[i].textContent = v
 	})
+       } else {
+	 setTimeout(() => {
+		update_board(data)
+	 },50)
+       }
+}
+
+// Handle player Turn
+socket.on("player_turn",(data) => {
+  setTimeout(() => {
+    	// Update Board
+    	update_board(data)
   	//Player Turn
   	if(data.username == localStorage.getItem("username")){
 	  document.querySelectorAll('.board-cell').forEach((c) => {
