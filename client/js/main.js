@@ -243,15 +243,27 @@ socket.on("room_disconnect_event",(data) => {
 // Common User Function
 function common_user_function(){
       setTimeout(() => {
-	  if( document.querySelectorAll('.username_display').length > 0){
-	    document.querySelectorAll('.username_display').forEach((e) => {
-	      e.textContent = localStorage.getItem("username")
-	    })
+	let x = 0
+	const iv = setInterval(() => {
+	  if(document.querySelector('.username_display') &&
+	    document.querySelector('.username_display').textContent.length == 0){
+	    if(document.querySelectorAll('.username_display').length > 0){
+	      document.querySelectorAll('.username_display').forEach((e) => {
+		e.textContent = localStorage.getItem("username")
+	      })
+	    }
+		x +=1
 	  }
-	  if(document.querySelectorAll('.user_profile_image').length > 0){
-	    document.querySelectorAll('.user_profile_image').forEach((e) => {
-	      e.src = `https://robohash.org/${localStorage.getItem("username")}.png`
-	    })
+
+	  if(document.querySelector('.user_profile_image') && 
+	     document.querySelectorAll('.user_profile_image').src.length == 0
+	  ){
+	    if(document.querySelectorAll('.user_profile_image').length > 0){
+	      document.querySelectorAll('.user_profile_image').forEach((e) => {
+		e.src = `https://robohash.org/${localStorage.getItem("username")}.png`
+	      })
+	    }
+	    x += 1
 	  }
 	  if(document.querySelector("#player-indicator").parentElement){
 	   document.querySelector("#player-indicator").parentElement.insertAdjacentHTML("afterbegin",`
@@ -261,7 +273,12 @@ function common_user_function(){
 			${player_sign == 'x' ? 'x' : 'o'}
 		</span>
 	     `)
+	  x += 1
 	  }
+		if(x == 3){
+		  clearInterval(iv)
+		}
+	})
       },800)
 }
 
