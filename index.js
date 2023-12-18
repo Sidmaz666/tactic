@@ -39,7 +39,8 @@ socket.on("connection", (con) => {
 	sid:[con.id],
 	turn:data.username,
 	board: Array(9).fill(null),
-	assigned_sign: [Math.random() < 0.5 ? 'x' : 'o']
+	assigned_sign: [Math.random() < 0.5 ? 'x' : 'o'],
+	is_end: false
       }
       con.join(data.roomname)
       socket.to(data.roomname).emit('room_create_event',{
@@ -81,7 +82,7 @@ socket.on("connection", (con) => {
 	  })
 	  socket.to(data.roomname).emit('player_turn',{ 
 	    username: Math.random() < 0.5 ? data.username : opponent,
-	    board: rooms[data.roomname].board
+	    board: rooms[data.roomname].is_end ? Array(9).fill(null) : rooms[data.roomname].board
 	  })
 	} else {
 	  con.emit('room_join_event',{
@@ -99,6 +100,7 @@ socket.on("connection", (con) => {
   con.on("player_move", (data) => {
     	rooms[data.current_room].board = data.board
 	if(isWin(rooms[data.current_room].board)){
+	  rooms[data.current_room].is_end = true
 	  socket.to(data.current_room).emit('player_win',{ 
 	    username: rooms[data.current_room].turn,  
 	    board:rooms[data.current_room].board,
@@ -107,12 +109,14 @@ socket.on("connection", (con) => {
 	  })
 	} else if(rooms[data.current_room].board.every((c) => c) &&
 	  	!isWin(rooms[data.current_room].board)) {
+		rooms[data.current_room].is_end = true
 		socket.to(data.current_room).emit('player_win',{ 
 		  username: rooms[data.current_room].turn,  
 		  board:rooms[data.current_room].board,
 		  status: "tie"
 		})
 	} else {
+	    rooms[data.current_room].is_end = false
 	    rooms[data.current_room].turn = rooms[data.current_room].users.filter(e => {
 		return e !== data.username
 	      })[0]
@@ -124,6 +128,7 @@ socket.on("connection", (con) => {
   })
   // Restart Game
   con.on("restart", (data) => {
+    rooms[data.current_room].is_end = false
     rooms[data.current_room].board = Array(9).fill(null)
     rooms[data.current_room].turn = Math.random() < 0.5 ? data.username : rooms[data.current_room].users.filter(e => { return e !== data.username })[0]
     rooms[data.current_room].assigned_sign = [Math.random() < 0.5 ? 'x' : 'o']
