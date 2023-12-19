@@ -4,6 +4,7 @@ let isWin = false;
 let current_room;
 let player_sign;
 let isAudio = 0;
+let level, wins, title
 window.onload = async function () {
   // Check Join Room Link
   if (window.location.search.length !== 0) {
@@ -56,6 +57,16 @@ window.onload = async function () {
       null
     );
   }
+  passive_render("#user-game", function(){
+	level = localStorage.getItem("level") || 0;
+    	wins = localStorage.getItem("wins") || 0;
+    	title = localStorage.getItem("title") || _title(0);
+    	localStorage.setItem("wins", wins);
+    	localStorage.setItem("level", level);
+    	localStorage.setItem("title", title);
+    	document.querySelectorAll(".user_level").forEach((e) => e.textContent = level )
+    	document.querySelectorAll(".user_title").forEach((e) => e.textContent = title )
+  },null)
   // Set Color Mode From Local Storage
   // Default Dark Mode
   localStorage.setItem("theme", localStorage.getItem("theme") || "dark");
@@ -586,6 +597,14 @@ socket.on("player_win", (data) => {
     data.status == "win"
   ) {
     isWin = true;
+    wins = parseInt(wins) + 1;
+    level = _level(wins, parseInt(level));
+    title = _title(parseInt(level))
+    localStorage.setItem("wins", wins)
+    localStorage.setItem("level", level)
+    localStorage.setItem("title", title)
+    document.querySelectorAll(".user_level").forEach((e) => e.textContent = level )
+    document.querySelectorAll(".user_title").forEach((e) => e.textContent = title )
     document.querySelector("#player-indicator").insertAdjacentHTML(
       "afterend",
       `
@@ -737,4 +756,107 @@ function toggle_audio(btn) {
 	<i class="fa-solid fa-volume-xmark"></i>
     	`;
   }
+}
+
+// Handle Level
+function _level(wins,level){
+  if(level !== 0){
+    	const required_ = (level + 1 ) * 10
+    	if(required_ == (wins - (level * 10))){
+	  return level + 1
+	}
+  } else if(wins == 10){
+	  return 1
+	}
+}
+
+// Title User by Level Function
+function _title(level) {
+  const titles = [
+    "Bacteria",
+    "E. coli",
+    "Streptococcus",
+    "Amoeba",
+    "Paramecia",
+    "Euglenoid",
+    "Yeast",
+    "Mold",
+    "Lichen",
+    "Red Moss",
+    "Brown Moss",
+    "Yellow Moss",
+    "Red Algae",
+    "Brown Algae",
+    "Green Algae",
+    "Fern",
+    "Gymnosperm",
+    "Pine",
+    "Spruce",
+    "Cycads",
+    "Ginkgo biloba",
+    "Conifers",
+    "Junipers",
+    "Yews",
+    "Douglas firs",
+    "Hemlocks",
+    "Angiosperm",
+    "Rose",
+    "Sunflower",
+    "Apple",
+    "Tulip",
+    "Orchid",
+    "Daisy",
+    "Lily",
+    "Tomato",
+    "Peonies",
+    "Blueberry",
+    "Fish",
+    "Insect",
+    "Ant",
+    "Bee",
+    "Butterfly",
+    "Mosquito",
+    "Grasshopper",
+    "Beetle",
+    "Wasp",
+    "Dragonfly",
+    "Ladybug",
+    "Moth",
+    "Amphibian",
+    "Frog",
+    "Salamander",
+    "Newt",
+    "Toad",
+    "Reptile",
+    "Snake",
+    "Lizard",
+    "Turtle",
+    "Crocodile",
+    "Alligator",
+    "Komodo dragon",
+    "Bird",
+    "Eagle",
+    "Sparrow",
+    "Penguin",
+    "Robin",
+    "Ostrich",
+    "Hummingbird",
+    "Woodpecker",
+    "Swan",
+    "Albatross",
+    "Pelican",
+    "Mammal",
+    "Tiger",
+    "Giraffe",
+    "Lion",
+    "Cheetah",
+    "Whale",
+    "Elephant",
+    "Dog",
+    "Gorilla",
+    "Dolphin",
+    "Human"
+  ];
+  const index = level > titles.length ? titles[titles.length] : level ;
+  return String(titles[index]).toLowerCase();
 }
