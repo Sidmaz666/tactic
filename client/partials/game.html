@@ -118,4 +118,18 @@
   class="position-absolute" style="top:50px;left:42px;">
 </div>
 
+<div
+  class="position-absolute" style="top:90px;left:5px">
+    <button
+      type="button" class="btn d-flex border-0 fs-5"
+      style="cursor: pointer;--bs-text-opacity:0;color:var(--bs-body-color);"
+      id="audio_btn" onclick="toggle_audio(this)">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
+</div>
+
+<audio src="./audio/move_audio.mp3" style="display: none;" id="player_audio"></audio>
+<audio src="./audio/win_audio.mp3" style="display: none;" id="player_audio_win"></audio>
+<audio src="./audio/lose_audio.mp3" style="display: none;" id="player_audio_lose"></audio>
+
 </div>

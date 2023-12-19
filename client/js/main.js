@@ -3,6 +3,7 @@
 let isWin = false;
 let current_room;
 let player_sign;
+let isAudio = 0;
 window.onload = async function () {
   // Check Join Room Link
   if (window.location.search.length !== 0) {
@@ -38,6 +39,22 @@ window.onload = async function () {
     } else {
       setup_("partials/user.html", "body");
     }
+    passive_render(
+      "#audio_btn",
+      function () {
+        isAudio = parseInt(localStorage.getItem("is_audio")) || 0;
+        if (isAudio == 0) {
+          document.querySelector("#audio_btn").innerHTML = `
+		<i class="fa-solid fa-volume-high"></i>
+		`;
+        } else {
+          document.querySelector("#audio_btn").innerHTML = `
+		<i class="fa-solid fa-volume-xmark"></i>
+		`;
+        }
+      },
+      null
+    );
   }
   // Set Color Mode From Local Storage
   // Default Dark Mode
@@ -202,18 +219,22 @@ socket.on("room_create_event", (data) => {
   } else if (data.status == "success") {
     setup_("./partials/game.html", "body", "#user-room");
     player_sign = data.player_sign;
-    setTimeout(() => {
-      notify("#user-game", "room_creation_success", data.message, 8000, 3);
-      passive_render(
-        `#share_link_btn`,
-        function (data) {
-          document.getElementById(
-            "share_link_btn"
-          ).dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`;
-        },
-        data
-      );
-    }, 500);
+    passive_render(
+      "#user-game",
+      function (data) {
+        notify("#user-game", "room_creation_success", data.message, 8000, 3);
+      },
+      data
+    );
+    passive_render(
+      `#share_link_btn`,
+      function (data) {
+        document.getElementById(
+          "share_link_btn"
+        ).dataset.link = `${window.location.href}?action=join&room_id=${data.roomname}`;
+      },
+      data
+    );
   }
 });
 
@@ -243,15 +264,20 @@ socket.on("room_join_event", (data) => {
       player_sign = data.player_sign;
       setup_("./partials/game.html", "body", "#user-room");
     }
-    setTimeout(() => {
-      notify("#user-game", "room_joining_success", data.message, 8000, 3);
-      remove_share_btn();
-      passive_render(
-        `#players_container`,
-        function (data) {
-          document.querySelector("#players_container").insertAdjacentHTML(
-            "beforeend",
-            `
+    passive_render(
+      "#user-game",
+      function (data) {
+        notify("#user-game", "room_joining_success", data.message, 8000, 3);
+      },
+      data
+    );
+    remove_share_btn();
+    passive_render(
+      `#players_container`,
+      function (data) {
+        document.querySelector("#players_container").insertAdjacentHTML(
+          "beforeend",
+          `
 	<span class="ms-2 me-3 fs-5 fw-bold" id="vs-txt">
 	  <i>VS</i>
 	</span>
@@ -275,17 +301,16 @@ socket.on("room_join_event", (data) => {
     }.png" alt="Opponent Profile!">
 	</div>
 	  `
-          );
-        },
-        data
-      );
-      document.querySelectorAll(".cap").forEach((e) => {
-        e.remove();
-      });
-      document.querySelectorAll(".board-cell").forEach((e) => {
-        e.style.background = "";
-      });
-    }, 500);
+        );
+      },
+      data
+    );
+    document.querySelectorAll(".cap").forEach((e) => {
+      e.remove();
+    });
+    document.querySelectorAll(".board-cell").forEach((e) => {
+      e.style.background = "";
+    });
   }
 });
 // Handle User Disconnect
@@ -397,35 +422,67 @@ socket.on("player_turn", (data) => {
           c.style["pointer-events"] = "all";
         }
       });
-      document
-        .querySelector("#player-indicator")
-        .classList.remove("border-secondary");
-      document
-        .querySelector("#player-indicator")
-        .classList.add("border-primary");
-      document
-        .querySelector("#opponent-indicator")
-        .classList.remove("border-primary");
-      document
-        .querySelector("#opponent-indicator")
-        .classList.add("border-secondary");
+      passive_render(
+        "#player-indicator",
+        function () {
+          document
+            .querySelector("#player-indicator")
+            .classList.remove("border-secondary");
+          document
+            .querySelector("#player-indicator")
+            .classList.add("border-primary");
+        },
+        null
+      );
+      passive_render(
+        "#opponent-indicator",
+        function () {
+          document
+            .querySelector("#opponent-indicator")
+            .classList.remove("border-primary");
+          document
+            .querySelector("#opponent-indicator")
+            .classList.add("border-secondary");
+        },
+        null
+      );
     } else {
       //Opponent Turn
       document.querySelectorAll(".board-cell").forEach((c) => {
         c.style["pointer-events"] = "none";
       });
-      document
-        .querySelector("#player-indicator")
-        .classList.remove("border-primary");
-      document
-        .querySelector("#player-indicator")
-        .classList.add("border-secondary");
-      document
-        .querySelector("#opponent-indicator")
-        .classList.remove("border-secondary");
-      document
-        .querySelector("#opponent-indicator")
-        .classList.add("border-primary");
+      passive_render(
+        "#player-indicator",
+        function () {
+          document
+            .querySelector("#player-indicator")
+            .classList.remove("border-primary");
+          document
+            .querySelector("#player-indicator")
+            .classList.add("border-secondary");
+        },
+        null
+      );
+      passive_render(
+        "#opponent-indicator",
+        function () {
+          document
+            .querySelector("#opponent-indicator")
+            .classList.remove("border-secondary");
+          document
+            .querySelector("#opponent-indicator")
+            .classList.add("border-primary");
+        },
+        null
+      );
+    }
+    const boadEmpty = Array.from(
+      document.querySelectorAll(".board-cell")
+    ).filter((e) => {
+      return e.textContent.length > 0;
+    }).length;
+    if (isAudio == 0 && boadEmpty > 0) {
+      document.querySelector("#player_audio").play();
     }
   }, 500);
 });
@@ -536,6 +593,9 @@ socket.on("player_win", (data) => {
 			style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
 		  `
     );
+    if (isAudio == 0) {
+      document.querySelector("#player_audio_win").play();
+    }
   } else if (data.status == "tie") {
     document.querySelector("#player-indicator").insertAdjacentHTML(
       "afterend",
@@ -552,6 +612,9 @@ socket.on("player_win", (data) => {
 			style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
 		  `
       );
+      if (isAudio == 0) {
+        document.querySelector("#player_audio_win").play();
+      }
     }
   } else {
     if (document.querySelector("#opponent-indicator")) {
@@ -562,6 +625,9 @@ socket.on("player_win", (data) => {
 			style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
 		  `
       );
+      if (isAudio == 0) {
+        document.querySelector("#player_audio_lose").play();
+      }
     }
   }
   if (data.pattern) {
@@ -657,3 +723,18 @@ socket.on("receive_emoji", (data) => {
     );
   }
 });
+
+// Handle Audio
+function toggle_audio(btn) {
+  isAudio = isAudio == 0 ? 1 : 0;
+  localStorage.setItem("is_audio", isAudio);
+  if (isAudio == 0) {
+    btn.innerHTML = `
+    	<i class="fa-solid fa-volume-high"></i>
+    	`;
+  } else {
+    btn.innerHTML = `
+	<i class="fa-solid fa-volume-xmark"></i>
+    	`;
+  }
+}
