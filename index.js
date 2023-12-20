@@ -78,11 +78,11 @@ socket.on("connection", (con) => {
 	    message: `${data.username} Joined!`,
 	    username: data.username,
 	    opponent,
-	    player_sign: rooms[data.roomname].assigned_sign[1]
+	    player_sign: rooms[data.roomname].assigned_sign[1],
 	  })
 	  socket.to(data.roomname).emit('player_turn',{ 
 	    username: Math.random() < 0.5 ? data.username : opponent,
-	    board: rooms[data.roomname].is_end ? Array(9).fill(null) : rooms[data.roomname].board
+	    board: rooms[data.roomname].is_end ? Array(9).fill(null) : rooms[data.roomname].board,
 	  })
 	} else {
 	  con.emit('room_join_event',{
@@ -125,6 +125,10 @@ socket.on("connection", (con) => {
 		board:rooms[data.current_room].board
 	      })
 	}
+  })
+  // Get Player Level Data
+  con.on("player_level_data", (data) => {
+    socket.to(data.current_room).emit("receive_player_level_data",data)
   })
   // Restart Game
   con.on("restart", (data) => {

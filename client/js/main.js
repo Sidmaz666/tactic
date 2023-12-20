@@ -58,8 +58,8 @@ window.onload = async function () {
     );
   }
   passive_render("#user-game", function(){
-	level = localStorage.getItem("level") || 0;
-    	wins = localStorage.getItem("wins") || 0;
+	level =  isNaN(parseInt(localStorage.getItem("level"))) || localStorage.getItem("level") == null ? 0 : parseInt(localStorage.getItem("level")) ;
+    	wins = isNaN(parseInt(localStorage.getItem("wins"))) || localStorage.getItem("wins") == null ? 0 : parseInt(localStorage.getItem("wins")) ;
     	title = localStorage.getItem("title") || _title(0);
     	localStorage.setItem("wins", wins);
     	localStorage.setItem("level", level);
@@ -208,7 +208,7 @@ function create_room(roomname) {
 function join_room(roomname) {
   socket.emit("join_room", {
     username: localStorage.getItem("username"),
-    roomname,
+    roomname
   });
   current_room = roomname;
 }
@@ -271,6 +271,12 @@ socket.on("room_join_event", (data) => {
   if (data.status == "fail") {
     notify("#user-room", "room_joining_error", data.message, 8000, 2);
   } else if (data.status == "success") {
+    // Send Player Level Data
+    socket.emit("player_level_data", {
+      username: localStorage.getItem("username"),
+      current_room,
+      level:localStorage.getItem("level") || level || 0
+    })
     if (localStorage.getItem("username") == data.username) {
       player_sign = data.player_sign;
       setup_("./partials/game.html", "body", "#user-room");
@@ -347,6 +353,28 @@ socket.on("room_disconnect_event", (data) => {
     document.querySelector("#end_game").remove();
   }
 });
+
+// Receive Player Level Data
+socket.on("receive_player_level_data", (data) => {
+  // Render Opponent Level Data
+  if(data.username !== localStorage.getItem("username")){
+    passive_render("#opponent-indicator", function(data){
+       if(document.querySelector("#op_lvl")){
+	    document.querySelector("#op_lvl").remove()
+       }
+	document.querySelector("#opponent-indicator").insertAdjacentHTML("afterend",`
+		<span class="position-absolute cap" 
+		  id="op_lvl"
+		  style="border-radius:100%;
+		  left:0px;text-align:center;width:50px;
+		  height:28px;bottom:-35px;font-size:small;">
+		      <span class="fw-bold">Lv:</span>
+		      <span >${data.level}</span>
+	      </span>
+	  `)
+    }, data)
+  }
+})
 
 // Common User Function
 function common_user_function() {
@@ -763,14 +791,16 @@ function toggle_audio(btn) {
 
 // Handle Level
 function _level(wins,level){
-  if(level !== 0){
-    	const required_ = (level + 1 ) * 10
-    	if(required_ == (wins - (level * 10))){
+  if(parseInt(level) !== 0){
+    	const required_ = ParseInt((level + 1 ) * 10)
+    	if(required_ == ParseInt(wins - (level * 10))){
 	  return level + 1
 	}
   } else if(wins == 10){
 	  return 1
-	}
+  } else {
+    return level
+  }
 }
 
 // Title User by Level Function
@@ -860,6 +890,6 @@ function _title(level) {
     "Dolphin",
     "Human"
   ];
-  const index = level > titles.length ? titles[titles.length] : level ;
+  const index = level >= titles.length ? titles[titles.length - 1] : level ;
   return String(titles[index]).toLowerCase();
 }

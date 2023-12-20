@@ -7,7 +7,6 @@
       justify-content: center;
       font-size: 2em;
     }
-
     .board-cell:hover {
       background-color: var(--bs-gray-800);
       cursor: pointer;
@@ -15,23 +14,43 @@
     #emoji_icon:hover > svg{
       color: var(--bs-gray-500);
     }
-[id*="-indicator"].border-primary{
+[id="player-indicator"].border-primary{
   border: 2px solid transparent; 
   box-shadow: 0 0 2px 0 var(--bs-primary); 
   animation: glow 2s ease-in-out infinite; 
+}
+
+[id="opponent-indicator"].border-primary{
+  border: 2px solid var(--bs-danger)!important;
+  box-shadow: 0 0 2px 0 var(--bs-danger); 
+  animation: glow-danger 2s ease-in-out infinite; 
 }
 .emj{
   animation: slideUp 2s ease-in;
 }
 @keyframes glow {
   0% {
+    border: 2px solid var(--bs-danger)!important;
     box-shadow: 0 0 2px 0  var(--bs-primary); 
   }
   50% {
+    border: 2px solid var(--bs-danger)!important;
     box-shadow: 0 0 8px 2px  var(--bs-primary); 
   }
   100% {
+    border: 2px solid var(--bs-danger)!important; 
     box-shadow: 0 0 2px 0 var(--bs-primary); 
+  }
+}
+@keyframes glow-danger {
+  0% {
+    box-shadow: 0 0 2px 0  var(--bs-danger); 
+  }
+  50% {
+    box-shadow: 0 0 8px 2px  var(--bs-danger); 
+  }
+  100% {
+    box-shadow: 0 0 2px 0 var(--bs-danger); 
   }
 }
 @keyframes slideUp {
@@ -119,6 +138,13 @@
 		id="player-indicator"
 		style="width: 50px;height: 50px;border-radius: 100%;"
 		src="" alt="User Profile!">
+		<span class="position-absolute" 
+		  style="border-radius:100%;
+		  left:0px;text-align:center;width:50px;
+		  height:28px;bottom:-35px;font-size:small;">
+		      <span class="fw-bold">Lv:</span>
+		      <span class="user_level"></span>
+	      </span>
 	</div>
 	</div>
 
