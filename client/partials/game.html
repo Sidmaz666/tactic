@@ -1,3 +1,54 @@
+<style>
+.board-cell {
+      border: 1px solid var(--bs-secondary-border-subtle);
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+    }
+
+    .board-cell:hover {
+      background-color: var(--bs-gray-800);
+      cursor: pointer;
+    }
+    #emoji_icon:hover > svg{
+      color: var(--bs-gray-500);
+    }
+[id*="-indicator"].border-primary{
+  border: 2px solid transparent; 
+  box-shadow: 0 0 2px 0 var(--bs-primary); 
+  animation: glow 2s ease-in-out infinite; 
+}
+.emj{
+  animation: slideUp 2s ease-in;
+}
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 2px 0  var(--bs-primary); 
+  }
+  50% {
+    box-shadow: 0 0 8px 2px  var(--bs-primary); 
+  }
+  100% {
+    box-shadow: 0 0 2px 0 var(--bs-primary); 
+  }
+}
+@keyframes slideUp {
+  0% {
+    transform: translateY(100%); /* Start position at the bottom */
+    scale: 0.5;
+  }
+  50% {
+    transform: translateY(0); /* Midway through animation, move to the top */
+    scale: 2;
+  }
+  100% {
+    scale: 1;
+  }
+}
+</style>
+
 <div id="user-game" class="d-flex justify-content-center flex-column">
   <nav class="navbar bg-transparent fixed-top">
   <div class="container-fluid">
@@ -71,24 +122,6 @@
 	</div>
 	</div>
 
-<style>
-.board-cell {
-      border: 1px solid var(--bs-secondary-border-subtle);
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2em;
-    }
-
-    .board-cell:hover {
-      background-color: var(--bs-gray-800);
-      cursor: pointer;
-    }
-    #emoji_icon:hover > svg{
-      color: var(--bs-gray-500);
-    }
-</style>
 
 <div class="container mt-5 ps-3 pe-3">
     <div class="row mx-auto game_board" style="max-width: 300px;">
@@ -133,5 +166,6 @@
 <audio src="./audio/move_audio.mp3" style="display: none;" id="player_audio"></audio>
 <audio src="./audio/win_audio.mp3" style="display: none;" id="player_audio_win"></audio>
 <audio src="./audio/lose_audio.mp3" style="display: none;" id="player_audio_lose"></audio>
+<audio src="./audio/emoji_audio.mp3" style="display: none;" id="emoji_audio"></audio>
 
 </div>

@@ -740,6 +740,9 @@ socket.on("receive_emoji", (data) => {
 		</span>
 	`
     );
+    if(isAudio == 0){
+      document.querySelector("#emoji_audio").play()
+    }
   }
 });
 
