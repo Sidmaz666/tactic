@@ -69,7 +69,7 @@ socket.on("connection", (con) => {
 	  rooms[data.roomname].users.push(data.username)
 	  rooms[data.roomname].sid.push(con.id)
 	  rooms[data.roomname].assigned_sign.push(
-	    rooms[data.roomname].assigned_sign[0] == 'x' ? 'o' : 'x'
+	  rooms[data.roomname].assigned_sign[0] == 'x' ? 'o' : 'x'
 	  )
 	  const opponent = rooms[data.roomname].users.filter(e => {return e !== data.username })
 	  con.join(data.roomname)
@@ -80,8 +80,9 @@ socket.on("connection", (con) => {
 	    opponent,
 	    player_sign: rooms[data.roomname].assigned_sign[1],
 	  })
+	  const x_player_index = rooms[data.roomname].assigned_sign.indexOf('x')
 	  socket.to(data.roomname).emit('player_turn',{ 
-	    username: Math.random() < 0.5 ? data.username : opponent,
+	    username: rooms[data.roomname].users[x_player_index],
 	    board: rooms[data.roomname].is_end ? Array(9).fill(null) : rooms[data.roomname].board,
 	  })
 	} else {
