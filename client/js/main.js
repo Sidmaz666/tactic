@@ -83,6 +83,16 @@ window.onload = async function () {
     }
   }
   document.querySelector("html").setAttribute("data-bs-theme", color_mode);
+  // Initialize Service Worker
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("service_worker.js").then(registration=>{
+      console.log("Service Worker Registered!");
+    }).catch(error=>{
+      console.log("Service Worker Registration Failed!" , {error:error});
+    });
+   } else {
+	  console.log("Service Worker not supported!");
+}
 };
 
 // Initialize Socket Connection

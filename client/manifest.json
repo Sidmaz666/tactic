@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Tactic By Sidmaz666",
+  "short_name": "Tactic",
+  "version": "0.0.1",
+  "description": "Multiplayer Tic Tac Toe Game, Also Offline AI Mode Available",
+  "start_url": "index.html",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./img/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "display": "standalone"
+}
