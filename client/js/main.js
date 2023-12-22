@@ -445,6 +445,9 @@ set_event(`document.forms['room_form']`, "submit", function (e) {
     } else if (operation == "join") {
       join_room(roomname.value.replace(/ /g, ""));
     }
+    e.submitter.innerHTML = "<img src='./img/loader.gif' style='height:20px;' />"
+    document.querySelector("#create").setAttribute("disabled","")
+    document.querySelector("#join").setAttribute("disabled","")
     common_user_function();
   }
 });
