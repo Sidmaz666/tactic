@@ -893,3 +893,287 @@ function _title(level) {
   const index = level >= titles.length ? titles[titles.length - 1] : level ;
   return String(titles[index]).toLowerCase();
 }
+
+// Play With AI
+function setup_ai(){
+  setup_("./partials/game.html", "body", "#user-room");
+  player_sign = Math.random() < 0.5 ? 'x' : 'o'
+  passive_render(".game_board", function(){
+    document.querySelectorAll(".username_display").forEach((e) => {
+      e.textContent = localStorage.getItem("username");
+    });
+    document.querySelectorAll(".user_profile_image").forEach((e) => {
+      e.src=`https://robohash.org/${localStorage.getItem("username")}.png`;
+    });
+    document.querySelector("#audio_btn")
+      .parentElement.style.cssText =  document.querySelector("#emoji_icon")
+      .parentElement.style.cssText
+      document.querySelector("#emoji_icon").remove()
+      document.querySelector("#share_link_btn").remove()
+      document
+        .querySelector("#player-indicator")
+        .parentElement.insertAdjacentHTML(
+          "afterbegin",
+          `
+	      <span class="position-absolute bg-body border border-light-subtle" id="player-sign"
+	      style="border-radius:100%;left:-15px;text-align:center;width:28px;height:28px;bottom:-5px"
+	      >
+		      ${player_sign}
+	      </span>
+	 `
+        );
+        document.querySelector("#players_container").insertAdjacentHTML(
+          "beforeend",
+          `
+	<span class="ms-2 me-3 fs-5 fw-bold" id="vs-txt">
+	  <i>VS</i>
+	</span>
+        <div class="d-flex justify-constent-center align-items-center position-relative">
+		<span class="position-absolute bg-body border border-light-subtle"
+		id="opponent-sign"
+		style="border-radius:100%;left:-15px;text-align:center;width:28px;height:28px;bottom:-5px"
+		>
+			${player_sign == "x" ? "o" : "x"}
+		</span>
+	  	<img class="
+		border border-secondary
+		me-2
+		"
+		id="opponent-indicator"
+		style="width: 50px;height: 50px;border-radius: 100%;"
+		src="./img/ai.png" alt="Opponent Profile!">
+		<span class="position-absolute" style="border-radius:100%;
+		  left:0px;text-align:center;width:50px;
+		  height:28px;bottom:-35px;font-size:small;">
+		      <span class="fw-bold">Lv:</span>
+		      <span class="">AI</span>
+	      </span>
+	</div>
+	  `
+        );
+    setTimeout(() => {
+      document.querySelectorAll('.board-cell').forEach(e => {
+	      e.remove()
+      })
+    for (let index = 0; index <= 8; index++) {
+      document.querySelector('.game_board').insertAdjacentHTML("beforeend",`
+	  <div class="col-4 board-cell" data-value="" style="pointer-events: none;"></div>
+	`)
+    }
+      document.querySelectorAll('.board-cell').forEach(e => {
+	      e.addEventListener("click", function(e) {
+	      		e.target.textContent = player_sign
+			e.target.dataset.value = player_sign
+			turn_counter = player_sign == 'x' ? 'o' : 'x'
+			ai_turn()
+			if (isAudio == 0) {
+			  document.querySelector("#player_audio").play();
+			}
+	      })
+      })
+      		if(player_sign == 'x'){
+		  player_turn()
+		} else {
+		  ai_turn()
+		}
+    },500)
+  },null)
+}
+
+function ai_turn(){
+    const ai_sign = player_sign == 'x' ? 'o' : 'x'
+    const board = []
+    document.querySelectorAll('.board-cell').forEach(e => {
+      	board.push(e.textContent)
+    })
+   if(checkWinner(board) == null) {
+     if(findBestMove(board, ai_sign) !== null && 
+      !Array.from(document.querySelectorAll('.board-cell')).every((c) => { return c.textContent }) 
+     ){
+	document.querySelectorAll('.board-cell')[findBestMove(board,ai_sign)].textContent = ai_sign
+	player_turn()
+     } else {
+      declareWinner(checkWinner(board),true)
+     }
+    } else {
+      declareWinner(checkWinner(board))
+    }
+}
+
+function player_turn(){
+  const board = []
+  document.querySelectorAll('.board-cell').forEach(e => {
+      	board.push(e.textContent)
+  })
+   if(checkWinner(board) == null) {
+     if(!Array.from(document.querySelectorAll('.board-cell')).every((c) => { return c.textContent })){
+	document.querySelectorAll('.board-cell').forEach(e => {
+	  if(e.textContent.length == 0){
+	    e.style['pointer-events'] = "all"
+	  } else {
+	    e.style['pointer-events'] = "none"
+	  }
+	})
+     } else {
+      declareWinner(checkWinner(board),true)
+     }
+    } else {
+      declareWinner(checkWinner(board))
+    }
+}
+
+function start_over_ai(){
+  player_sign = Math.random() < 0.5 ? 'x' : 'o'
+  document.querySelector("#end_game").remove();
+  document.querySelectorAll(".cap").forEach((e) => {
+    e.remove();
+  });
+  document.querySelectorAll(".board-cell").forEach((e) => {
+    e.style.background = "";
+    e.textContent = "";
+    e.dataset.value = "";
+  });
+  if(player_sign == "x"){
+    player_turn()
+  } else {
+    ai_turn()
+  }
+    document.querySelector("#player-sign").textContent = ""
+    document.querySelector("#opponent-sign").textContent = ""
+    document.querySelector("#player-sign").textContent = player_sign
+    document.querySelector("#opponent-sign").textContent = player_sign == 'x' ? 'o' : 'x'
+}
+
+function declareWinner(winner,isTie=false){
+    document.querySelectorAll('.board-cell').forEach(e => {
+	e.style['pointer-events'] = "none"
+    })
+    if(!isTie){
+	if(winner.winner == player_sign){
+	  wins = parseInt(wins) + 1;
+	  level = _level(wins, parseInt(level));
+	  title = _title(parseInt(level))
+	  localStorage.setItem("wins", wins)
+	  localStorage.setItem("level", level)
+	  localStorage.setItem("title", title)
+	  document.querySelectorAll(".user_level").forEach((e) => e.textContent = level )
+	  document.querySelectorAll(".user_title").forEach((e) => e.textContent = title )
+	  document.querySelector("#player-indicator").insertAdjacentHTML(
+	    "afterend",
+	    `
+			      <span class="position-absolute cap"
+			      style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
+			`
+	  );
+	  if (isAudio == 0) {
+	    document.querySelector("#player_audio_win").play();
+	  }
+	} else {
+	  document.querySelector("#opponent-indicator").insertAdjacentHTML(
+	    "afterend",
+	    `
+			      <span class="position-absolute cap"
+			      style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
+			`
+	  );
+	  if (isAudio == 0) {
+	    document.querySelector("#player_audio_lose").play();
+	  }
+	}
+    winner.pattern.forEach((e) => {
+	document.querySelectorAll(".board-cell")[e].style.background = `var(${winner.winner == player_sign ? '--bs-primary' : '--bs-danger'})`;
+      });
+  document.getElementById("players_container").insertAdjacentHTML(
+    "afterend",
+    `
+	<div id="end_game" class="d-flex column justify-content-center align-items-center mt-3">
+	    <button onclick="start_over_ai()" class="btn btn-primary">Restart</button>
+	    <button onclick="window.location.href = window.location.origin"
+	    class="btn btn-secondary ms-2">Exit</button>
+	</div>`
+  );
+    } else {
+    document.getElementById("players_container").insertAdjacentHTML(
+      "afterend",
+      `
+	  <div id="end_game" class="d-flex column justify-content-center align-items-center mt-3">
+	      <button onclick="start_over_ai()" class="btn btn-primary">Restart</button>
+	      <button onclick="window.location.href = window.location.origin"
+	      class="btn btn-secondary ms-2">Exit</button>
+	  </div>`
+    );
+      document.querySelector("#player-indicator").insertAdjacentHTML(
+	"afterend",
+	`
+			  <span class="position-absolute cap"
+			  style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
+		    `
+      );
+	document.querySelector("#opponent-indicator").insertAdjacentHTML(
+	  "afterend",
+	  `
+			  <span class="position-absolute cap"
+			  style="left:10px;text-align:center;width:28px;height:28px;top: -20px;">👑</span>
+		    `
+	);
+	if (isAudio == 0) {
+	  document.querySelector("#player_audio_win").play();
+	}
+    }
+}
+
+function checkWinner(board) {
+  const winningPatterns = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6]             // Diagonals
+  ];
+
+  for (const pattern of winningPatterns) {
+    const [a, b, c] = pattern;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { winner: board[a], pattern };
+    }
+  }
+
+  return null; 
+}
+
+function findBestMove(board,ai_sign) {
+  if (!board.includes('')) {
+    return null; 
+  }
+
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === '') {
+      const testBoard = [...board];
+      testBoard[i] = ai_sign; 
+      const winnerInfo = checkWinner(testBoard);
+      if (winnerInfo && winnerInfo.winner === ai_sign) {
+        return i;
+      }
+    }
+  }
+
+
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === '') {
+      const testBoard = [...board];
+      testBoard[i] = player_sign; 
+      const opponentWinningMove = checkWinner(testBoard);
+      if (opponentWinningMove && opponentWinningMove.winner === player_sign) {
+        return i; 
+      }
+    }
+  }
+
+  const emptyCells = board.reduce((acc, cell, index) => {
+    if (cell === '') {
+      acc.push(index);
+    }
+    return acc;
+  }, []);
+
+  const randomIndex = Math.floor(Math.random() * emptyCells.length);
+  return emptyCells[randomIndex];
+}
