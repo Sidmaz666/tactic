@@ -92,7 +92,7 @@ window.onload = async function () {
     });
    } else {
 	  console.log("Service Worker not supported!");
-}
+  }
 };
 
 // Initialize Socket Connection
@@ -281,12 +281,6 @@ socket.on("room_join_event", (data) => {
   if (data.status == "fail") {
     notify("#user-room", "room_joining_error", data.message, 8000, 2);
   } else if (data.status == "success") {
-    // Send Player Level Data
-    socket.emit("player_level_data", {
-      username: localStorage.getItem("username"),
-      current_room,
-      level:localStorage.getItem("level") || level || 0
-    })
     if (localStorage.getItem("username") == data.username) {
       player_sign = data.player_sign;
       setup_("./partials/game.html", "body", "#user-room");
@@ -455,6 +449,12 @@ set_event(`document.forms['room_form']`, "submit", function (e) {
 // Handle player Turn
 socket.on("player_turn", (data) => {
   setTimeout(() => {
+    //Emit Player  Level Data
+    socket.emit("player_level_data", {
+      username: localStorage.getItem("username"),
+      current_room,
+      level:localStorage.getItem("level") || level || 0
+    })
     // Update Board
     passive_render(
       ".board-cell",
